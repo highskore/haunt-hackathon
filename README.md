@@ -1,4 +1,4 @@
-# haunt-hackathon
+# Haunt
 
 Haunt is a native macOS terminal for running many coding agents at once, built on libghostty, with a Rust core over UniFFI and sandboxed WASM plugins.
 
