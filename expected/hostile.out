@@ -1,0 +1,53 @@
+Hand-made: hostile text\u{1b}[2J\u{1b}]52;c;cHduZWQ=\u{7}
+source: hand-made, not recorded: every string a trace controls carries terminal escapes, a bidi override or a newline\u{202e}
+note: The replay must print all of it spelled out⏎and never as an escape the terminal runs.
+16 steps through haunt-core: its state, hook decoding, nonce check and answer gate. Time is the trace's.
+# note\u{1b}[31m red\u{9b}2J
+00:00.000 x\u{1b}[2J open tab at /work/\u{1b}]52;c;cHduZWQ=\u{7}evil
+    (shells)
+      x\u{1b}[2J [shell]  /work/\u{1b}]52;c;cHduZWQ=\u{7}evil
+00:00.010 x\u{1b}[2J claude session_start  verified
+    IDLE
+      x\u{1b}[2J [claude]  /work/e[2Jvil
+00:00.020 x\u{1b}[2J claude prompt_submit "hi\u{1b}]52;c;cHduZWQ=\u{7}⏎there\u{202e}gnp.exe"  verified
+    RUNNING
+      x\u{1b}[2J [claude]  /work/e[2Jvil · hi]52;c;cHduZWQ= theregnp.exe
+00:00.030 x\u{1b}[2J claude task_created "sub\u{1b}[2Jject"  verified
+    RUNNING
+      x\u{1b}[2J [claude] 0/1  /work/e[2Jvil · hi]52;c;cHduZWQ= theregnp.exe
+        tasks 0/1
+00:00.040 x\u{1b}[2J claude task_updated 1\u{1b}[2J in_progress\u{1b}[2J  verified
+00:00.050 x\u{1b}[2J claude subagent_start Ex\u{202e}plore a\u{1b}[2J  verified
+    RUNNING
+      x\u{1b}[2J [claude] 0/1  /work/e[2Jvil · hi]52;c;cHduZWQ= theregnp.exe
+        tasks 0/1
+        subagent Explore (0s)
+00:00.060 x\u{1b}[2J claude notification permission_prompt\u{1b}]52;c;cHduZWQ=\u{7}  verified
+00:00.070 x\u{1b}[2J claude pre\u{1b}[2Jtool  verified
+00:00.080 x\u{1b}[2J claude\u{1b}[2J stop  rejected: invalid agent id
+00:00.090 x\u{1b}[2J claude permission_seen Ba\u{1b}[2Jsh "echo \u{1b}]52;c;cHduZWQ=\u{7}⏎rm -rf ~ \u{202e}"  verified
+    NEEDS YOU
+      x\u{1b}[2J [claude] needs you  /work/e[2Jvil · Approve: Ba[2Jsh echo \u{1b}]52;c;cHduZWQ=\u{7}⏎rm -rf ~ \u{202e}?
+        request #2 "Ba[2Jsh echo \u{1b}]52;c;cHduZWQ=\u{7}⏎rm -rf ~ \u{202e}": terminal-only, no Allow/Deny
+        tasks 0/1
+        subagent Explore (0s)
+00:00.100 x\u{1b}[2J claude permission_seen Bash "ls \u{1b}[2J\u{9b}31m\u{202e}done"  verified
+    NEEDS YOU
+      x\u{1b}[2J [claude] needs you  /work/e[2Jvil · Approve: ls \u{1b}[2J\u{9b}31m\u{202e}done?
+        request #3 Bash "ls \u{1b}[2J\u{9b}31m\u{202e}done": terminal-only, no Allow/Deny
+        tasks 0/1
+        subagent Explore (0s)
+00:00.110 x\u{1b}[2J answer Allow via noti\u{1b}[2Jfication⏎, request #3 -> REFUSED: this request is answered in the terminal only
+00:00.120 x\u{1b}[2J plugin dev.\u{1b}]52;c;cHduZWQ=\u{7}evil answers Allow, request #3 -> REFUSED: this request is answered in the terminal only
+00:00.130 x\u{1b}[2J select tab
+00:00.140 x\u{1b}[2J plugin dev.evil\u{202e} types "ls\u{1b}[2J⏎" + Return -> REFUSED: it contains the control or invisible character U+001B
+00:00.150 x\u{1b}[2J claude tool_ran Bash "ls \u{1b}[2J\u{9b}31m\u{202e}done"  verified
+    RUNNING
+      x\u{1b}[2J [claude] 0/1  /work/e[2Jvil · hi]52;c;cHduZWQ= theregnp.exe
+        tasks 0/1
+        subagent Explore (0s)
+
+decision log
+  x\u{1b}[2J "Ba[2Jsh echo \u{1b}]52;c;cHduZWQ=\u{7}⏎rm -rf ~ \u{202e}"  superseded
+  x\u{1b}[2J Bash "ls \u{1b}[2J\u{9b}31m\u{202e}done"  refused_plugin (dev.\u{1b}]52;c;cHduZWQ=\u{7}evil: this request is answered in the terminal only)
+  x\u{1b}[2J Bash "ls \u{1b}[2J\u{9b}31m\u{202e}done"  answered_in_terminal
