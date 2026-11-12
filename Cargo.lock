@@ -40,6 +40,7 @@ checksum = "ed5909b6e89a2db4456e54cd5f673791d7eca6732202bbf2a9cc504fe2f9b84a"
 [[package]]
 name = "haunt-core"
 version = "0.0.1"
+source = "git+https://github.com/highskore/haunt?rev=badc9ef7a3c0df4f6d9edc1d202f2a7e083f263f#badc9ef7a3c0df4f6d9edc1d202f2a7e083f263f"
 dependencies = [
  "getrandom",
  "libc",
@@ -88,6 +89,7 @@ checksum = "cf8baf1c55e62ffcace7a9f06f4bd9cd3f0c4beb022d3b367256b91b87513d98"
 [[package]]
 name = "multimaxxing-engine"
 version = "0.1.0"
+source = "git+https://github.com/highskore/haunt-multimaxxing?rev=26a92a41dee257c5955848283e5146e80b555f12#26a92a41dee257c5955848283e5146e80b555f12"
 dependencies = [
  "serde",
  "serde_json",

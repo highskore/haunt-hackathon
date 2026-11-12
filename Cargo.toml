@@ -8,10 +8,11 @@ publish = false
 [dependencies]
 # haunt's core, from a checkout of haunt (branch linux-replay) next to this repo. No default features:
 # the replay needs no plugin host, so no wasmtime.
-haunt-core = { path = "../haunt/core", default-features = false, features = ["replay"] }
-# Once haunt is public, use this instead, then `cargo update -p haunt-core`. The Dockerfile then
-# needs no local copy of haunt.
-# haunt-core = { git = "https://github.com/highskore/haunt", rev = "f837ac34a5d8e35ec2227b7d3585eeda1e704a44", default-features = false, features = ["replay"] }
+# haunt-core = { path = "../haunt/core", default-features = false, features = ["replay"] }
+# For a clone with nothing beside it, use the git lines below instead of both path lines, then
+# `cargo update -w` (it pins only the two git sources) and commit Cargo.lock: the Dockerfile builds --locked.
+haunt-core = { git = "https://github.com/highskore/haunt", rev = "badc9ef7a3c0df4f6d9edc1d202f2a7e083f263f", default-features = false, features = ["replay"] }
 serde_json = "1"
 # The MULTIMAXXING engine, from a checkout of haunt-plugins next to this repo.
-multimaxxing-engine = { path = "../haunt-plugins/haunt-multimaxxing/crates/engine" }
+# multimaxxing-engine = { path = "../haunt-plugins/haunt-multimaxxing/crates/engine" }
+multimaxxing-engine = { git = "https://github.com/highskore/haunt-multimaxxing", rev = "26a92a41dee257c5955848283e5146e80b555f12" }

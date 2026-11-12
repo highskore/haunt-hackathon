@@ -1,10 +1,10 @@
 # syntax=docker/dockerfile:1
 # Builds haunt-replay on Linux, then runs its tests and every trace with no network.
 #
-# With haunt-core and the MULTIMAXXING engine as path dependencies (Cargo.toml's default), pass both checkouts:
-#   docker build --build-context haunt=../haunt --build-context multimaxxing=../haunt-plugins/haunt-multimaxxing -t haunt-replay .
-# With the git dependency in Cargo.toml instead, no local copy is needed:
+# With the git dependencies in Cargo.toml, nothing else needs to be checked out:
 #   docker build -t haunt-replay .
+# With path dependencies instead, pass both checkouts:
+#   docker build --build-context haunt=../haunt --build-context multimaxxing=../haunt-plugins/haunt-multimaxxing -t haunt-replay .
 # Then:
 #   docker run --rm --network none haunt-replay
 
