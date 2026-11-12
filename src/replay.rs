@@ -8,7 +8,7 @@ use std::collections::HashMap;
 use std::time::{Duration, Instant};
 
 use haunt_core::event::{AgentEvent, parse_body, visible};
-use haunt_core::plugins::HostRequest;
+use haunt_core::host_request::HostRequest;
 use haunt_core::ptygate::untypable;
 use haunt_core::{Core, Outcome, Row, RowKind, SidebarSnapshot, SurfaceEnv};
 use serde_json::{Map, Value};
