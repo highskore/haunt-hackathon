@@ -4,7 +4,7 @@
 
 | trace | made how |
 |---|---|
-| `recorded-claude-session.jsonl` | **Recorded** from a real Claude Code session (2.1.322) with the haunt-claude adapter: its socket lines and their arrival times. The cwd, session id and prompts are scrubbed. One step is scripted and marked `"scripted": true`: a late notification Allow. |
+| `recorded-claude-session.jsonl` | **Recorded** from a real Claude Code session (2.1.322) with the haunt-claude adapter: its socket lines and their arrival times. The cwd and prompts are scrubbed, and the session, tool call and subagent ids are replaced with stable fakes. One step is scripted and marked `"scripted": true`: a late notification Allow. |
 | `handmade-gate.jsonl` | **Hand-made.** Hook lines written to haunt's event spec (`docs/agent-events.md`) plus scripted answers: a forged prompt, stale and repeated answers, multi-line, hidden-character and multi-file requests, plugin answers and plugin typing. |
 | `hostile.jsonl` | **Hand-made.** Terminal escapes (`ESC[2J`, OSC 52), C1 controls, bidi overrides and newlines in every string a trace controls. The replay spells them out and never prints them raw. |
 
