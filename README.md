@@ -1,14 +1,41 @@
-<p align="center"><img src="docs/img/logo.png" width="168" alt="Haunt's icon: a sleepy ghost in the corner of a four-pane grid"></p>
+<div align="center">
 
-<h1 align="center">Haunt</h1>
+<img src="docs/img/logo.png" width="148" alt="Haunt's icon: a sleepy ghost in one pane of a four-pane grid">
 
-<p align="center"><b>A terminal for running many coding agents at once.</b></p>
+# Haunt
 
-Haunt is a native macOS terminal for running many coding agents at once, built on libghostty, with a Rust core over UniFFI and sandboxed WASM plugins.
+**A modular, agent-based terminal.**
 
-![Haunt mid-run: two agents need you, web-api runs two subagents against a three-item to-do list, and the finished rows tick through their last tool calls](docs/img/hero.png)
+A native macOS terminal for running many coding agents at once, built on libghostty, with a Rust core over UniFFI and sandboxed WASM plugins.
+
+[![Watch the demo](https://img.shields.io/badge/watch-the%203%20min%20demo-D97757)](docs/video/demo.mp4)
+[![27-second cut](https://img.shields.io/badge/or-the%2027%20s%20cut-111)](docs/video/demo-short.mp4)
+![macOS](https://img.shields.io/badge/macOS-15%2B-111?logo=apple&logoColor=white)
+![Rust core](https://img.shields.io/badge/core-Rust-6b7280?logo=rust&logoColor=white)
+![WASM plugins](https://img.shields.io/badge/plugins-WASM%20components-654ff0?logo=webassembly&logoColor=white)
+
+<img src="docs/img/hero.png" width="820" alt="Haunt mid-run: two agents need you, web-api runs two subagents against a three-item to-do list, and the finished rows tick through their last tool calls">
+
+</div>
 
 Every piece of agent state Haunt shows comes from the agents' own hook events (Claude Code and Codex), never from scraping terminal output. Agent output is treated as untrusted. This repo holds `haunt-replay`, which runs recorded agent events through Haunt's real core on Linux, so the core's behaviour can be checked without a Mac.
+
+## How to run
+
+### Linux, in Docker
+
+No credentials needed, and nothing else to check out. The network is used only while building.
+
+```sh
+docker build -t haunt-replay .                 # fetches haunt-core and the MULTIMAXXING engine at pinned revs
+docker run --rm --network none haunt-replay    # the tests, then every trace
+```
+
+To build against local checkouts instead (haunt and haunt-plugins next to this repo), switch `Cargo.toml` to its path dependencies and pass both:
+
+```sh
+docker build --build-context haunt=../haunt --build-context multimaxxing=../haunt-plugins/haunt-multimaxxing -t haunt-replay .
+```
 
 ## Plugins
 
@@ -16,11 +43,11 @@ Haunt keeps its core small and builds the rest as plugins. A plugin is a WASM co
 
 Sixteen plugins are built on that API (listed at the end): on the agents' rows (CI checks, checklist progress, tool-call sparklines, a live ticker, sticky notes), in side panels and windows (a code map, your fleet as a night sky, a calendar heatmap, handoff briefs), and outside the window (the Dock ghost, a glow at the top of the screen, sounds and a voice). A seventeenth, Scope creep, reads the plan an agent got approved in plan mode and marks its row when it edits a file the plan never named, for example "1 outside plan · package.json".
 
-![Scope creep: the suite row reads "1 outside plan · package.json", and the Scope panel lists the files the plan names next to the ones the agent touched](docs/img/scope-creep.png)
+<p align="center"><img src="docs/img/scope-creep.png" width="820" alt="Scope creep: the suite row reads 1 outside plan · package.json, and the Scope panel lists the files the plan names next to the ones the agent touched"></p>
 
 Themes are plugins too, made only of data: colours, fonts, a few strings, and drawing layers (fills, gradients, bevels, patterns, PNGs, vector paths, shadows) tied to named parts of the window. Five ship: Glass, Sigilcore, Windows 95, DMG and Frutiger Aero. Haunt checks every layer before drawing it behind the text, and drops any that would make text unreadable, cover the terminal, or hide or fake an agent's status.
 
-![The Frutiger Aero theme applied from the theme picker](docs/img/theme-aero.png)
+<p align="center"><img src="docs/img/themes.png" width="820" alt="Four of the themes on the same window: Glass, Sigilcore, Windows 95 and DMG"></p>
 
 ## MULTIMAXXING
 
@@ -39,26 +66,9 @@ That trace is real: three headless Claude Code sessions (Sonnet) on small demo r
 - **Notifications with Allow and Deny.** A notification answers exactly the request it was shown for, through the same gate. Allow only appears when the whole command fits on the banner; anything longer gets Open only.
 - **The review screen (⌘⇧R).** An agent's diff, the checks it ran, and an inbox of tabs with changes. Comments go back to the agent as a prompt. Git runs with filters, diff drivers, hooks and submodule configs disabled, so a hostile repo can't run code when you look at its diff.
 
-![A paste with a hidden zero-width space: Haunt spells it out as \u{200b} before anything reaches the terminal](docs/img/paste-guard.png)
+<p align="center"><img src="docs/img/safety.png" width="820" alt="Left: a paste with a hidden zero-width space, spelled out before anything reaches the terminal. Right: the review screen, with a comment on the agent&#39;s diff that goes back to it as a prompt"></p>
 
-![The review screen: a comment on the agent's diff, which goes back to it as a prompt](docs/img/review.png)
-
-## How to run
-
-### Linux, in Docker
-
-No credentials needed, and nothing else to check out. The network is used only while building.
-
-```sh
-docker build -t haunt-replay .                 # fetches haunt-core and the MULTIMAXXING engine at pinned revs
-docker run --rm --network none haunt-replay    # the tests, then every trace
-```
-
-To build against local checkouts instead (haunt and haunt-plugins next to this repo), switch `Cargo.toml` to its path dependencies and pass both:
-
-```sh
-docker build --build-context haunt=../haunt --build-context multimaxxing=../haunt-plugins/haunt-multimaxxing -t haunt-replay .
-```
+## More ways to run
 
 ### Linux or macOS, with Rust
 
