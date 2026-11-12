@@ -25,7 +25,8 @@ fn main() -> ExitCode {
     let (header, steps) = match trace::parse(&text) {
         Ok(p) => p,
         Err(e) => {
-            eprintln!("haunt-replay: {shown}: {}", out::strip(&e));
+            // visible, not strip: a newline in the error must not start a line of its own.
+            eprintln!("haunt-replay: {shown}: {}", haunt_core::event::visible(&e));
             return ExitCode::FAILURE;
         }
     };

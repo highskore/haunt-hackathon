@@ -39,6 +39,30 @@ fn every_trace_replays_to_its_expected_output() {
     }
 }
 
+/// A trace that fails to parse: its stderr against `expected/malformed/<name>.err`, run from the repo
+/// root so the path in it is the same everywhere.
+#[test]
+fn a_malformed_trace_fails_with_its_expected_error() {
+    let mut seen = 0;
+    for entry in std::fs::read_dir(root().join("traces/malformed")).unwrap() {
+        let path = entry.unwrap().path();
+        let rel = path.strip_prefix(root()).unwrap();
+        let out = Command::new(env!("CARGO_BIN_EXE_haunt-replay")).arg(rel).current_dir(root()).output().unwrap();
+        let err = String::from_utf8(out.stderr).unwrap();
+        assert!(!out.status.success() && out.stdout.is_empty(), "{}", rel.display());
+        assert!(err.lines().count() == 1 && !err.chars().any(|c| c != '\n' && haunt_core::event::is_hidden(c)), "{err:?}");
+        seen += 1;
+        let expected = root().join("expected/malformed").join(path.file_stem().unwrap()).with_extension("err");
+        if std::env::var_os("HAUNT_BLESS").is_some() {
+            std::fs::write(&expected, &err).unwrap();
+            continue;
+        }
+        let want = std::fs::read_to_string(&expected).unwrap_or_else(|e| panic!("{}: {e} (HAUNT_BLESS=1 writes it)", expected.display()));
+        assert_eq!(err, want, "{}", rel.display());
+    }
+    assert!(seen >= 2);
+}
+
 #[test]
 fn no_trace_text_reaches_the_terminal_as_a_control_or_hidden_character() {
     for path in traces() {
@@ -49,6 +73,10 @@ fn no_trace_text_reaches_the_terminal_as_a_control_or_hidden_character() {
     let hostile = replay(&root().join("traces/hostile.jsonl")).1;
     for spelled in ["\\u{1b}[2J", "\\u{1b}]52;c;", "\\u{7}", "\\u{202e}", "\\u{9b}", "⏎"] {
         assert!(hostile.contains(spelled), "{spelled} is shown, not dropped");
+    }
+    let invisible = replay(&root().join("traces/hostile-invisible.jsonl")).1;
+    for spelled in ["\\u{7f}", "l\\u{115f}s", "\\u{3164}", "\\u{fe0f}", "look\\u{7f}\\u{3164}around"] {
+        assert!(invisible.contains(spelled), "{spelled} is shown, not dropped");
     }
 }
 

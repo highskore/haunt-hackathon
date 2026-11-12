@@ -1,0 +1,1 @@
+haunt-replay: traces/malformed/nonce.jsonl: line 2: nonce is false (left out) or a string (a wrong one)

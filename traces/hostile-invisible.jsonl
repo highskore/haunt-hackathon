@@ -1,0 +1,12 @@
+{"trace":{"title":"Hand-made: invisible characters\u007f","source":"hand-made, not recorded: DEL, Hangul fillers U+115F and U+3164, and the variation selector U+FE0F, which fonts draw as nothing","notes":["lᅟs and lㅤs look like ls; each must be spelled out."]}}
+{"t":0,"tab":"t\u007f","open":{"cwd":"/work/ㅤx"}}
+{"t":10,"tab":"t\u007f","hook":{"v":1,"agent":"claude","event":"session_start","session_id":"s1","cwd":"/work/ㅤx"}}
+{"t":20,"tab":"t\u007f","hook":{"v":1,"agent":"claude","event":"prompt_submit","session_id":"s1","query":"fix\u007f it️"}}
+{"t":30,"tab":"t\u007f","hook":{"v":1,"agent":"claude","event":"subagent_spawn","session_id":"s1","agent_type":"Exploreᅟ","description":"look\u007fㅤaround️\nnext line"}}
+{"t":40,"tab":"t\u007f","hook":{"v":1,"agent":"claude","event":"subagent_start","session_id":"s1","agent_id":"a️1","agent_type":"Exploreᅟ"}}
+{"t":50,"tab":"t\u007f","hook":{"v":1,"agent":"claude","event":"tool_start","session_id":"s1","tool_name":"Bash","tool_use_id":"tu1","tool_input":{"command":"lᅟs"}}}
+{"t":60,"tab":"t\u007f","hook":{"v":1,"agent":"claude","event":"permission_seen","session_id":"s1","tool_name":"Bash","tool_input":{"command":"lᅟs"}}}
+{"t":70,"tab":"t\u007f","answer":{"allow":true,"via":"notificationㅤ"}}
+{"t":80,"tab":"t\u007f","hook":{"v":1,"agent":"claude","event":"tool_ran","session_id":"s1","tool_name":"Bash","tool_use_id":"tu1","tool_input":{"command":"lᅟs"}}}
+{"t":90,"tab":"t\u007f","hook":{"v":1,"agent":"claude","event":"permission_seen","session_id":"s1","tool_name":"Bash","tool_input":{"command":"echo ok️\u007f"}}}
+{"t":100,"tab":"t\u007f","plugin_answer":{"plugin":"dev.ㅤevil","allow":true}}

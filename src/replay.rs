@@ -230,13 +230,13 @@ impl Replay {
     }
 }
 
-/// The event as an adapter writes it to the socket: serde_json leaves C1 controls raw, which the
+/// The event as an adapter writes it to the socket: serde_json leaves DEL and C1 controls raw, which the
 /// core rejects, so they go out as `\u` escapes, as the adapters send them.
 fn socket_line(v: &Value) -> String {
     let mut s = String::new();
     for c in v.to_string().chars() {
         match c {
-            '\u{80}'..='\u{9f}' => s += &format!("\\u{:04x}", c as u32),
+            '\u{7f}'..='\u{9f}' => s += &format!("\\u{:04x}", c as u32),
             c => s.push(c),
         }
     }
