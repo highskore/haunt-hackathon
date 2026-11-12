@@ -8,13 +8,19 @@
 # Then:
 #   docker run --rm --network none haunt-replay
 
-# Empty unless --build-context haunt=<path> replaces it.
-FROM scratch AS haunt
+# Empty placeholders unless --build-context haunt=<path> replaces this stage.
+FROM busybox:1.36.1 AS haunt
+RUN mkdir -p /core /wit /design && touch /Cargo.toml /design/tokens.json
 
 FROM rust:1.98.0-slim-bookworm
 # No debug info or incremental cache: a smaller image and a faster build.
 ENV CARGO_PROFILE_DEV_DEBUG=0 CARGO_INCREMENTAL=0
-COPY --from=haunt / /src/haunt-linux/
+# Only what haunt-core builds from: its crate, the workspace manifest it inherits from, the plugin
+# WIT and the design tokens it embeds.
+COPY --from=haunt /Cargo.toml /src/haunt-linux/Cargo.toml
+COPY --from=haunt /core /src/haunt-linux/core
+COPY --from=haunt /wit /src/haunt-linux/wit
+COPY --from=haunt /design/tokens.json /src/haunt-linux/design/tokens.json
 WORKDIR /src/haunt-hackathon
 COPY . .
 RUN cargo fetch --locked
