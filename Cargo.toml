@@ -7,8 +7,8 @@ publish = false
 
 [dependencies]
 # haunt's core, from a checkout of haunt (branch linux-replay) next to this repo.
-haunt-core = { path = "../haunt-linux/core", features = ["replay"] }
+haunt-core = { path = "../haunt/core", features = ["replay"] }
 # Once haunt is public, use this instead, then `cargo update -p haunt-core`. The Dockerfile then
 # needs no local copy of haunt.
-# haunt-core = { git = "https://github.com/highskore/haunt", rev = "63b006affb678e91e6d895a72a66cca55028d122", features = ["replay"] }
+# haunt-core = { git = "https://github.com/highskore/haunt", rev = "f837ac34a5d8e35ec2227b7d3585eeda1e704a44", features = ["replay"] }
 serde_json = "1"
