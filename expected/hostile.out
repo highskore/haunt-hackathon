@@ -2,6 +2,7 @@ Hand-made: hostile text\u{1b}[2J\u{1b}]52;c;cHduZWQ=\u{7}
 source: hand-made, not recorded: every string a trace controls carries terminal escapes, a bidi override or a newline\u{202e}
 note: The replay must print all of it spelled out⏎and never as an escape the terminal runs.
 16 steps through haunt-core: its state, hook decoding, nonce check and answer gate. Time is the trace's.
+mm: lines are MULTIMAXXING's decisions: its engine gets each verified event, tab select and close, and a tick every 15s.
 # note\u{1b}[31m red\u{9b}2J
 00:00.000 x\u{1b}[2J open tab at /work/\u{1b}]52;c;cHduZWQ=\u{7}evil
     (shells)
@@ -26,6 +27,9 @@ note: The replay must print all of it spelled out⏎and never as an escape the t
 00:00.070 x\u{1b}[2J claude pre\u{1b}[2Jtool  verified
 00:00.080 x\u{1b}[2J claude\u{1b}[2J stop  rejected: invalid agent id
 00:00.090 x\u{1b}[2J claude permission_seen Ba\u{1b}[2Jsh "echo \u{1b}]52;c;cHduZWQ=\u{7}⏎rm -rf ~ \u{202e}"  verified
+00:00.090 mm:    NOTIFY   x\u{1b}[2J interrupt: x\u{1b}[2J waits 0s on Ba[2Jsh (echo) approval, 1 open tasks, 1 subagents behind it; no tab in focus (score 120 > cost 0 + 60)
+00:00.090 mm:    row      x\u{1b}[2J [next] "approval for <1m"
+00:00.090 mm:    title           "next: x\u{1b}[2J · approval for <1m"
     NEEDS YOU
       x\u{1b}[2J [claude] needs you  /work/e[2Jvil · Approve: Ba[2Jsh echo \u{1b}]52;c;cHduZWQ=\u{7}⏎rm -rf ~ \u{202e}?
         request #2 "Ba[2Jsh echo \u{1b}]52;c;cHduZWQ=\u{7}⏎rm -rf ~ \u{202e}": terminal-only, no Allow/Deny
@@ -40,6 +44,9 @@ note: The replay must print all of it spelled out⏎and never as an escape the t
 00:00.110 x\u{1b}[2J answer Allow via noti\u{1b}[2Jfication⏎, request #3 -> REFUSED: this request is answered in the terminal only
 00:00.120 x\u{1b}[2J plugin dev.\u{1b}]52;c;cHduZWQ=\u{7}evil answers Allow, request #3 -> REFUSED: this request is answered in the terminal only
 00:00.130 x\u{1b}[2J select tab
+00:00.130 mm:    resume   x\u{1b}[2J while away 0s: asked for 2 approvals; now waits on Bash (ls) approval
+00:00.130 mm:    row      x\u{1b}[2J cleared
+00:00.130 mm:    title           cleared
 00:00.140 x\u{1b}[2J plugin dev.evil\u{202e} types "ls\u{1b}[2J⏎" + Return -> REFUSED: it contains the control or invisible character U+001B
 00:00.150 x\u{1b}[2J claude tool_ran Bash "ls \u{1b}[2J\u{9b}31m\u{202e}done"  verified
     RUNNING
@@ -51,3 +58,6 @@ decision log
   x\u{1b}[2J "Ba[2Jsh echo \u{1b}]52;c;cHduZWQ=\u{7}⏎rm -rf ~ \u{202e}"  superseded
   x\u{1b}[2J Bash "ls \u{1b}[2J\u{9b}31m\u{202e}done"  refused_plugin (dev.\u{1b}]52;c;cHduZWQ=\u{7}evil: this request is answered in the terminal only)
   x\u{1b}[2J Bash "ls \u{1b}[2J\u{9b}31m\u{202e}done"  answered_in_terminal
+
+MULTIMAXXING
+  1 ping: 1 interrupted at once, 0 held; 0 releases at a break or the cap; 0 dropped before they reached you

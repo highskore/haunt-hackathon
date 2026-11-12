@@ -3,6 +3,7 @@ source: hand-made, not recorded: every hook line follows docs/agent-events.md, a
 note: Two tabs: api runs Claude Code, web runs Codex.
 note: A hook line carries its tab's nonce unless the step says nonce false (left out) or gives a wrong one.
 47 steps through haunt-core: its state, hook decoding, nonce check and answer gate. Time is the trace's.
+mm: lines are MULTIMAXXING's decisions: its engine gets each verified event, tab select and close, and a tick every 15s.
 00:00.000 api    open tab at /work/api
     (shells)
       api [shell]  /work/api
@@ -87,6 +88,9 @@ note: A hook line carries its tab's nonce unless the step says nonce false (left
 00:04.000 api    claude tool_start Bash "cargo test"  verified
 # The real hook asks to run cargo test.
 00:04.100 api    claude permission_seen Bash "cargo test"  verified
+00:04.100 mm:    NOTIFY   api    interrupt: api waits 0s on Bash (cargo test) approval, 2 open tasks behind it; no tab in focus (score 120 > cost 0 + 60)
+00:04.100 mm:    row      api    [next] "approval for <1m"
+00:04.100 mm:    title           "next: api · approval for <1m"
     NEEDS YOU
       api [claude] needs you  /work/api · Approve: cargo test?
         request #4 Bash "cargo test": Allow/Deny offered
@@ -103,8 +107,13 @@ note: A hook line carries its tab's nonce unless the step says nonce false (left
 # A second click on the same request: it was consumed.
 00:05.100 api    answer Allow via sidebar, request #4 -> REFUSED: no request is up on that tab
 00:09.000 api    claude tool_ran Bash "cargo test"  verified
+00:09.000 mm:    row      api    cleared
+00:09.000 mm:    title           cleared
 00:09.500 api    claude tool_start Edit "/work/api/src/login.rs"  verified
 00:09.600 api    claude permission_seen Edit "/work/api/src/login.rs"  verified
+00:09.600 mm:    NOTIFY   api    interrupt: api waits 0s on Edit approval, 2 open tasks behind it; no tab in focus (score 120 > cost 0 + 60)
+00:09.600 mm:    row      api    [next] "approval for <1m"
+00:09.600 mm:    title           "next: api · approval for <1m"
     NEEDS YOU
       api [claude] needs you  /work/api · Approve: Edit /work/api/src/login.rs?
         request #6 "Edit /work/api/src/login.rs": Allow/Deny offered
@@ -114,6 +123,8 @@ note: A hook line carries its tab's nonce unless the step says nonce false (left
       web [codex]  /work/web · clean up the build folder
 # The user denied it in the terminal; Claude Code reports the failed call.
 00:09.700 api    claude tool_failed Edit "/work/api/src/login.rs"  verified
+00:09.700 mm:    row      api    cleared
+00:09.700 mm:    title           cleared
     RUNNING
       api [claude] 0/2  /work/api · Write the limiter
         tasks 0/2
@@ -121,6 +132,9 @@ note: A hook line carries its tab's nonce unless the step says nonce false (left
       web [codex]  /work/web · clean up the build folder
 00:09.800 api    claude tool_start Edit "/work/api/src/limit.rs"  verified
 00:09.900 api    claude permission_seen Edit "/work/api/src/limit.rs"  verified
+00:09.900 mm:    NOTIFY   api    interrupt: api waits 0s on Edit approval, 2 open tasks behind it; no tab in focus (score 120 > cost 0 + 60)
+00:09.900 mm:    row      api    [next] "approval for <1m"
+00:09.900 mm:    title           "next: api · approval for <1m"
     NEEDS YOU
       api [claude] needs you  /work/api · Approve: Edit /work/api/src/limit.rs?
         request #8 "Edit /work/api/src/limit.rs": Allow/Deny offered
@@ -138,6 +152,8 @@ note: A hook line carries its tab's nonce unless the step says nonce false (left
         subagent Explore · find the login route (1 tool · 2s)
       web [codex]  /work/web · clean up the build folder
 00:11.500 api    claude tool_ran Edit "/work/api/src/limit.rs"  verified
+00:11.500 mm:    row      api    cleared
+00:11.500 mm:    title           cleared
 00:11.600 api    claude task_updated 1 completed  verified
     RUNNING
       api [claude] 1/2  /work/api · add rate limiting to the login route
@@ -152,6 +168,9 @@ note: A hook line carries its tab's nonce unless the step says nonce false (left
       web [codex]  /work/web · clean up the build folder
 # Codex asks for a two-line command: the second line hides after a comment.
 00:12.000 web    codex permission_seen Bash "ls build # tidy⏎rm -rf ~/"  verified
+00:12.000 mm:    NOTIFY   web    interrupt: web waits 0s on Bash (ls build) approval; no tab in focus (score 120 > cost 0 + 60)
+00:12.000 mm:    row      web    [next] "approval for <1m"
+00:12.000 mm:    title           "next: web · approval for <1m"
     NEEDS YOU
       web [codex] needs you  /work/web · Approve: ls build # tidy⏎rm -rf ~/?
         request #2 Bash "ls build # tidy⏎rm -rf ~/": terminal-only, no Allow/Deny
@@ -198,6 +217,8 @@ note: A hook line carries its tab's nonce unless the step says nonce false (left
         tasks 1/2
         subagent Explore · find the login route (1 tool · 2s)
 00:17.500 web    codex tool_start Bash "rm -rf build"  verified
+00:17.500 mm:    row      web    cleared
+00:17.500 mm:    title           cleared
     RUNNING
       web [codex]  /work/web · clean up the build folder
       api [claude] 1/2  /work/api · Add tests
@@ -205,6 +226,9 @@ note: A hook line carries its tab's nonce unless the step says nonce false (left
         subagent Explore · find the login route (1 tool · 2s)
 # A plain command now, but the earlier prompts were never seen to end.
 00:17.600 web    codex permission_seen Bash "rm -rf build"  verified
+00:17.600 mm:    NOTIFY   web    interrupt: web waits 0s on Bash (rm) approval; no tab in focus (score 120 > cost 0 + 60)
+00:17.600 mm:    row      web    [next] "approval for <1m"
+00:17.600 mm:    title           "next: web · approval for <1m"
     NEEDS YOU
       web [codex] needs you  /work/web · Approve: rm -rf build?
         request #6 Bash "rm -rf build": terminal-only, no Allow/Deny
@@ -214,6 +238,9 @@ note: A hook line carries its tab's nonce unless the step says nonce false (left
         subagent Explore · find the login route (1 tool · 2s)
 00:18.000 web    answer Allow via notification, request #6 -> REFUSED: this request is answered in the terminal only
 00:18.200 web    select tab
+00:18.200 mm:    resume   web    while away 16s: asked for 4 approvals; now waits on Bash (rm) approval
+00:18.200 mm:    row      web    cleared
+00:18.200 mm:    title           cleared
 # A plugin command tries to type while a prompt is up.
 00:18.300 web    plugin dev.example.commands types "make clean" + Return -> REFUSED: not the selected tab, or a prompt is up or may still be on screen
 00:18.800 api    claude task_updated 2 completed  verified
@@ -225,6 +252,9 @@ note: A hook line carries its tab's nonce unless the step says nonce false (left
         tasks 2/2
         subagent Explore · find the login route (1 tool · 2s)
 00:19.000 api    claude stop  verified
+00:19.000 mm:    hold     api    held: api finished 0s ago; you're at a break (score 40 <= cost 0 + 60)
+00:19.000 mm:    row      api    held "held <1m · finished output"
+00:19.000 mm:    title           "next: api · 1 held"
     NEEDS YOU
       web [codex] needs you  /work/web · Approve: rm -rf build?
         request #6 Bash "rm -rf build": terminal-only, no Allow/Deny
@@ -240,3 +270,6 @@ decision log
   web    Bash "ls build # tidy⏎rm -rf ~/"  superseded
   web    Bash "rm -rf build\u{202e}/ ~"  superseded
   web    "apply_patch /work/web/a.js⏎/work/web/b.js"  superseded
+
+MULTIMAXXING
+  6 pings: 5 interrupted at once, 1 held; 0 releases at a break or the cap; 0 dropped before they reached you

@@ -2,38 +2,50 @@ Hand-made: invisible characters\u{7f}
 source: hand-made, not recorded: DEL, Hangul fillers U+115F and U+3164, and the variation selector U+FE0F, which fonts draw as nothing
 note: l\u{115f}s and l\u{3164}s look like ls; each must be spelled out.
 11 steps through haunt-core: its state, hook decoding, nonce check and answer gate. Time is the trace's.
+mm: lines are MULTIMAXXING's decisions: its engine gets each verified event, tab select and close, and a tick every 15s.
 00:00.000 t\u{7f} open tab at /work/\u{3164}x
     (shells)
       t\u{7f} [shell]  /work/\u{3164}x
 00:00.010 t\u{7f} claude session_start  verified
     IDLE
-      t\u{7f} [claude]  /work/\u{3164}x
+      t\u{7f} [claude]  /work/x
 00:00.020 t\u{7f} claude prompt_submit "fix\u{7f} it\u{fe0f}"  verified
     RUNNING
-      t\u{7f} [claude]  /work/\u{3164}x · fix it\u{fe0f}
+      t\u{7f} [claude]  /work/x · fix it
 00:00.030 t\u{7f} claude subagent_spawn Explore\u{115f} look\u{7f}\u{3164}around\u{fe0f}⏎next line  verified
 00:00.040 t\u{7f} claude subagent_start Explore\u{115f} a\u{fe0f}1  verified
     RUNNING
-      t\u{7f} [claude]  /work/\u{3164}x · fix it\u{fe0f}
-        subagent Explore\u{115f} · look\u{3164}around\u{fe0f} next line (0s)
+      t\u{7f} [claude]  /work/x · fix it
+        subagent Explore · lookaround next line (0s)
 00:00.050 t\u{7f} claude tool_start Bash "l\u{115f}s"  verified
 00:00.060 t\u{7f} claude permission_seen Bash "l\u{115f}s"  verified
+00:00.060 mm:    NOTIFY   t\u{7f} interrupt: t\u{7f} waits 0s on Bash approval, 1 subagents behind it; no tab in focus (score 120 > cost 0 + 60)
+00:00.060 mm:    row      t\u{7f} [next] "approval for <1m"
+00:00.060 mm:    title           "next: t\u{7f} · approval for <1m"
     NEEDS YOU
-      t\u{7f} [claude] needs you  /work/\u{3164}x · Approve: l\u{115f}s?
+      t\u{7f} [claude] needs you  /work/x · Approve: l\u{115f}s?
         request #2 Bash "l\u{115f}s": terminal-only, no Allow/Deny
-        subagent Explore\u{115f} · look\u{3164}around\u{fe0f} next line (0s)
+        subagent Explore · lookaround next line (0s)
 00:00.070 t\u{7f} answer Allow via notification\u{3164}, request #2 -> REFUSED: this request is answered in the terminal only
 00:00.080 t\u{7f} claude tool_ran Bash "l\u{115f}s"  verified
+00:00.080 mm:    row      t\u{7f} cleared
+00:00.080 mm:    title           cleared
     RUNNING
-      t\u{7f} [claude]  /work/\u{3164}x · fix it\u{fe0f}
-        subagent Explore\u{115f} · look\u{3164}around\u{fe0f} next line (0s)
+      t\u{7f} [claude]  /work/x · fix it
+        subagent Explore · lookaround next line (0s)
 00:00.090 t\u{7f} claude permission_seen Bash "echo ok\u{fe0f}\u{7f}"  verified
+00:00.090 mm:    NOTIFY   t\u{7f} interrupt: t\u{7f} waits 0s on Bash (echo) approval, 1 subagents behind it; no tab in focus (score 120 > cost 0 + 60)
+00:00.090 mm:    row      t\u{7f} [next] "approval for <1m"
+00:00.090 mm:    title           "next: t\u{7f} · approval for <1m"
     NEEDS YOU
-      t\u{7f} [claude] needs you  /work/\u{3164}x · Approve: echo ok\u{fe0f}\u{7f}?
+      t\u{7f} [claude] needs you  /work/x · Approve: echo ok\u{fe0f}\u{7f}?
         request #4 Bash "echo ok\u{fe0f}\u{7f}": terminal-only, no Allow/Deny
-        subagent Explore\u{115f} · look\u{3164}around\u{fe0f} next line (0s)
+        subagent Explore · lookaround next line (0s)
 00:00.100 t\u{7f} plugin dev.\u{3164}evil answers Allow, request #4 -> REFUSED: this request is answered in the terminal only
 
 decision log
   t\u{7f} Bash "l\u{115f}s"  answered_in_terminal
   t\u{7f} Bash "echo ok\u{fe0f}\u{7f}"  refused_plugin (dev.\u{3164}evil: this request is answered in the terminal only)
+
+MULTIMAXXING
+  2 pings: 2 interrupted at once, 0 held; 0 releases at a break or the cap; 0 dropped before they reached you

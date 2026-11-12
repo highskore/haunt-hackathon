@@ -7,12 +7,13 @@
 use std::collections::HashMap;
 use std::time::{Duration, Instant};
 
-use haunt_core::event::visible;
+use haunt_core::event::{AgentEvent, parse_body, visible};
 use haunt_core::plugins::HostRequest;
 use haunt_core::ptygate::untypable;
 use haunt_core::{Core, Outcome, Row, RowKind, SidebarSnapshot, SurfaceEnv};
 use serde_json::{Map, Value};
 
+use crate::mm::Mm;
 use crate::out::{Out, Style};
 use crate::trace::{Action, Header, Key, Nonce, Step};
 
@@ -24,13 +25,14 @@ struct Replay {
     out: Out,
     /// The sidebar as last printed, to print it only when it changes.
     sidebar: Out,
+    mm: Mm,
 }
 
 pub fn replay(header: &Header, steps: &[Step]) -> Out {
     // Never started: no socket, no ctl, no decision log on disk.
     let core = Core::new(std::env::temp_dir().join("haunt-replay-unused"));
     core.set_home_and_shell(None, None);
-    let mut r = Replay { core, tabs: HashMap::new(), names: HashMap::new(), out: Out::default(), sidebar: Out::default() };
+    let mut r = Replay { core, tabs: HashMap::new(), names: HashMap::new(), out: Out::default(), sidebar: Out::default(), mm: Mm::new() };
     if let Some(t) = &header.title {
         r.out.line(Style::Bold, &visible(t));
     }
@@ -42,12 +44,19 @@ pub fn replay(header: &Header, steps: &[Step]) -> Out {
     }
     let intro = format!("{} steps through haunt-core: its state, hook decoding, nonce check and answer gate. Time is the trace's.", steps.len());
     r.out.line(Style::Dim, &intro);
+    r.out.line(Style::Dim, "mm: lines are MULTIMAXXING's decisions: its engine gets each verified event, tab select and close, and a tick every 15s.");
     let start = Instant::now();
     for s in steps {
         r.core.set_clock(Some(start + Duration::from_millis(s.t)));
+        for (at, l) in r.mm.ticks_until(s.t) {
+            r.mm_line(at, &l);
+        }
         r.step(s);
     }
     r.decisions();
+    r.out.line(Style::Plain, "");
+    r.out.line(Style::Bold, "MULTIMAXXING");
+    r.out.line(Style::Plain, &format!("  {}", r.mm.summary()));
     r.out
 }
 
@@ -63,6 +72,7 @@ impl Replay {
             self.out.push(Style::Dim, "(scripted) ");
         }
         let env = self.tabs.get(&s.tab).cloned();
+        let mut mm = Vec::new();
         match (&s.action, env) {
             (Action::Open { cwd }, None) => match self.core.register_surface(cwd) {
                 Ok(env) => {
@@ -74,10 +84,15 @@ impl Replay {
             },
             (Action::Open { .. }, Some(_)) => self.out.push(Style::Bad, "open: the tab is already open"),
             (_, None) => self.out.push(Style::Bad, "no such tab (open it first)"),
-            (Action::Hook { body, nonce }, Some(env)) => self.hook(&env, body, nonce),
+            (Action::Hook { body, nonce }, Some(env)) => {
+                if let Some(e) = self.hook(&env, body, nonce) {
+                    mm = self.mm.event(s.t, &tab, &e);
+                }
+            }
             (Action::Select, Some(env)) => {
                 self.core.select_surface(&env.surface_id);
                 self.out.push(Style::Plain, "select tab");
+                mm = self.mm.focus(s.t, &tab);
             }
             (Action::Typed, Some(env)) => {
                 self.core.on_user_input(&env.surface_id);
@@ -123,10 +138,19 @@ impl Replay {
                 self.core.unregister_surface(&env.surface_id);
                 self.tabs.remove(&s.tab);
                 self.out.push(Style::Plain, "close tab");
+                mm = self.mm.close(s.t, &tab);
             }
         }
         self.out.push(Style::Plain, "\n");
+        for l in mm {
+            self.mm_line(s.t, &l);
+        }
         self.show_sidebar();
+    }
+
+    fn mm_line(&mut self, t: u64, line: &str) {
+        self.out.push(Style::Dim, &clock(t));
+        self.out.line(Style::Plain, &format!(" mm:    {line}"));
     }
 
     fn allowed(&mut self, bytes: &[u8]) {
@@ -137,7 +161,8 @@ impl Replay {
         self.out.push(Style::Bad, &format!("REFUSED: {}", visible(why)));
     }
 
-    fn hook(&mut self, env: &SurfaceEnv, body: &Map<String, Value>, nonce: &Nonce) {
+    /// The event, parsed as the core parsed it, when the line was verified.
+    fn hook(&mut self, env: &SurfaceEnv, body: &Map<String, Value>, nonce: &Nonce) -> Option<AgentEvent> {
         let mut line = body.clone();
         line.insert("surface_id".into(), env.surface_id.clone().into());
         line.remove("nonce");
@@ -153,14 +178,19 @@ impl Replay {
             }
         };
         self.out.push(Style::Plain, &format!("{}  ", describe(body)));
-        match self.core.replay_line(&socket_line(&Value::Object(line))) {
+        let line = socket_line(&Value::Object(line));
+        match self.core.replay_line(&line) {
             None => self.out.push(Style::Bad, "dropped: unknown surface"),
             Some(r) => match r.error {
                 Some(e) => self.out.push(Style::Bad, &format!("rejected: {}", visible(&e))),
-                None if r.verified => self.out.push(Style::Good, "verified"),
+                None if r.verified => {
+                    self.out.push(Style::Good, "verified");
+                    return parse_body(&line).ok();
+                }
                 None => self.out.push(Style::Warn, &format!("NOT verified ({how}): status only, can't create a request")),
             },
         }
+        None
     }
 
     /// The request an answer names: `live` is what the tab's row shows now, if anything.

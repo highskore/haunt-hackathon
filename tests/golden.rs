@@ -81,6 +81,34 @@ fn no_trace_text_reaches_the_terminal_as_a_control_or_hidden_character() {
 }
 
 #[test]
+fn multimaxxing_decides_beside_the_gate_on_verified_events_only() {
+    let gate = replay(&root().join("traces/handmade-gate.jsonl")).1;
+    for want in [
+        "00:04.100 mm:    NOTIFY   api    interrupt: api waits 0s on Bash (cargo test) approval",
+        "00:04.100 mm:    row      api    [next] \"approval for <1m\"",
+        "00:19.000 mm:    row      api    held \"held <1m · finished output\"",
+        "00:18.200 mm:    resume   web    while away",
+    ] {
+        assert!(gate.contains(want), "{want}");
+    }
+    let recorded = replay(&root().join("traces/recorded-claude-session.jsonl")).1;
+    assert!(recorded.contains("mm:    drop     demo   dropped: demo moved on while held"));
+    let invisible = replay(&root().join("traces/hostile-invisible.jsonl")).1;
+    assert!(invisible.contains("mm:    row      t\\u{7f} [next]"), "the tab name is spelled out");
+    for path in traces() {
+        let out = replay(&path).1;
+        assert!(out.contains("\nMULTIMAXXING\n  "), "{}", path.display());
+        let lines: Vec<&str> = out.lines().collect();
+        for w in lines.windows(2) {
+            if w[0].contains("NOT verified") {
+                let mm = format!("{} mm:", &w[0][..9]);
+                assert!(!w[1].starts_with(&mm), "an unverified event reached the engine: {}", w[1]);
+            }
+        }
+    }
+}
+
+#[test]
 fn the_same_trace_replays_the_same_way_twice() {
     let path = root().join("traces/handmade-gate.jsonl");
     assert_eq!(replay(&path).1, replay(&path).1);

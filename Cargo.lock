@@ -538,6 +538,7 @@ name = "haunt-replay"
 version = "0.1.0"
 dependencies = [
  "haunt-core",
+ "multimaxxing-engine",
  "serde_json",
 ]
 
@@ -759,6 +760,14 @@ dependencies = [
  "libc",
  "wasi",
  "windows-sys",
+]
+
+[[package]]
+name = "multimaxxing-engine"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

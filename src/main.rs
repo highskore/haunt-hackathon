@@ -1,6 +1,7 @@
 //! `haunt-replay <trace.jsonl>`: replays recorded agent hook events and answer attempts through
 //! haunt-core and prints the timeline, the sidebar and every gate decision.
 
+mod mm;
 mod out;
 mod replay;
 mod trace;

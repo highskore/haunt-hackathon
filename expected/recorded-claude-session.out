@@ -3,6 +3,7 @@ source: recorded 2026-11-12 from Claude Code 2.1.322 with the haunt-claude adapt
 note: Scrubbed: the cwd is renamed /work/demo, the prompts removed, and the session, tool call and subagent ids replaced with stable fakes (toolu_fake_N, agent-N), each consistently. Nothing else is changed.
 note: The user answered the Bash prompt by typing 1 at the terminal (the typed step is at the recorded time). The late notification Allow after it is scripted, not recorded.
 27 steps through haunt-core: its state, hook decoding, nonce check and answer gate. Time is the trace's.
+mm: lines are MULTIMAXXING's decisions: its engine gets each verified event, tab select and close, and a tick every 15s.
 # Haunt opens the tab and puts its surface id and nonce in the environment; claude starts in it.
 00:00.000 demo   open tab at /work/demo
     (shells)
@@ -29,6 +30,9 @@ note: The user answered the Bash prompt by typing 1 at the terminal (the typed s
       demo [claude]  /work/demo · [prompt removed]
         subagent Explore · Count lines in txt files (1s)
 00:18.286 demo   claude stop  verified
+00:18.286 mm:    hold     demo   held: demo finished 0s ago; no tab in focus (score 40 <= cost 0 + 60)
+00:18.286 mm:    row      demo   held "held <1m · finished output"
+00:18.286 mm:    title           "next: demo · 1 held"
 00:19.323 demo   claude subagent_stop agent-2  verified
     RUNNING
       demo [claude]  /work/demo · [prompt removed]
@@ -46,10 +50,16 @@ note: The user answered the Bash prompt by typing 1 at the terminal (the typed s
     IDLE
       demo [claude] done  /work/demo · Done in 15s
 00:27.053 demo   claude prompt_submit "[prompt removed]"  verified
+00:27.053 mm:    drop     demo   dropped: demo moved on while held
+00:27.053 mm:    row      demo   cleared
+00:27.053 mm:    title           cleared
     RUNNING
       demo [claude]  /work/demo · [prompt removed]
 00:29.097 demo   claude tool_start Bash "mkdir -p out && wc -l a.txt b.txt > out/counts.txt"  verified
 00:29.952 demo   claude permission_seen Bash "mkdir -p out && wc -l a.txt b.txt > out/counts.txt"  verified
+00:29.952 mm:    NOTIFY   demo   interrupt: demo waits 0s on Bash (mkdir) approval, ~30s of work behind it; no tab in focus (score 127 > cost 0 + 60)
+00:29.952 mm:    row      demo   [next] "approval for <1m"
+00:29.952 mm:    title           "next: demo · approval for <1m"
     NEEDS YOU
       demo [claude] needs you  /work/demo · Approve: mkdir -p out && wc -l a.txt b.txt > out/counts.txt?
         request #2 Bash "mkdir -p out && wc -l a.txt b.txt > out/counts.txt": Allow/Deny offered
@@ -61,12 +71,20 @@ note: The user answered the Bash prompt by typing 1 at the terminal (the typed s
 # The notification posted for request #2 is still on screen and gets clicked after the terminal answered.
 01:07.192 demo   (scripted) answer Allow via notification, request #2 -> REFUSED: you are answering it in the terminal
 01:07.457 demo   claude tool_done Bash "mkdir -p out && wc -l a.txt b.txt > out/counts.txt"  verified
+01:07.457 mm:    row      demo   cleared
+01:07.457 mm:    title           cleared
     RUNNING
       demo [claude]  /work/demo · [prompt removed]
 01:07.457 demo   claude tool_ran Bash "mkdir -p out && wc -l a.txt b.txt > out/counts.txt"  verified
 01:09.475 demo   claude stop  verified
+01:09.475 mm:    hold     demo   held: demo finished 0s ago; no tab in focus (score 40 <= cost 0 + 60)
+01:09.475 mm:    row      demo   held "held <1m · finished output"
+01:09.475 mm:    title           "next: demo · 1 held"
     IDLE
       demo [claude] done  /work/demo · Done in 42s
 
 decision log
   demo   Bash "mkdir -p out && wc -l a.txt b.txt > out/counts.txt"  answered_in_terminal
+
+MULTIMAXXING
+  3 pings: 1 interrupted at once, 2 held; 0 releases at a break or the cap; 1 dropped before they reached you
