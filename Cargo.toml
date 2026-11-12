@@ -10,5 +10,5 @@ publish = false
 haunt-core = { path = "../haunt-linux/core" }
 # Once haunt is public, use this instead, then `cargo update -p haunt-core`. The Dockerfile then
 # needs no local copy of haunt.
-# haunt-core = { git = "https://github.com/highskore/haunt", rev = "14f4d1c" }
+# haunt-core = { git = "https://github.com/highskore/haunt", rev = "c3ff1449229d5c89da08094c64d1ea702e0e6f19" }
 serde_json = "1"
