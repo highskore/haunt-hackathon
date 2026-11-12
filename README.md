@@ -1,21 +1,30 @@
-# Haunt
+<p align="center"><img src="docs/img/logo.png" width="168" alt="Haunt's icon: a sleepy ghost in the corner of a four-pane grid"></p>
+
+<h1 align="center">Haunt</h1>
+
+<p align="center"><b>A terminal for running many coding agents at once.</b></p>
 
 Haunt is a native macOS terminal for running many coding agents at once, built on libghostty, with a Rust core over UniFFI and sandboxed WASM plugins.
 
+![Haunt mid-run: two agents need you, web-api runs two subagents against a three-item to-do list, and the finished rows tick through their last tool calls](docs/img/hero.png)
+
 Every piece of agent state Haunt shows comes from the agents' own hook events (Claude Code and Codex), never from scraping terminal output. Agent output is treated as untrusted. This repo holds `haunt-replay`, which runs recorded agent events through Haunt's real core on Linux, so the core's behaviour can be checked without a Mac.
 
-## What's in it
+## Plugins
 
-- **The gate.** Every answer to an agent's permission prompt, from a click, a notification or a plugin, goes through one check in the core. An answer is sent as keystrokes only to the live request that is on screen. It is refused if the request is stale or replaced, if another prompt is up, if you typed at the terminal, or if the command hides characters. Each tab gets a random nonce, and events without it can update status but never create a request.
-- **Notifications with Allow and Deny.** A notification answers exactly the request it was shown for, through the same gate. Allow only appears when the whole command fits on the banner; anything longer gets Open only.
-- **The review screen (⌘⇧R).** An agent's diff, the checks it ran, and an inbox of tabs with changes. Comments go back to the agent as a prompt. Git runs with filters, diff drivers, hooks and submodule configs disabled, so a hostile repo can't run code when you look at its diff.
-- **Plugins with capabilities and consent.** Plugins are WASM components run by wasmtime. Each capability is shown and approved at install, then pinned in a lockfile. Nothing is installed by default. A plugin can type only from a command you ran, only into the visible tab, never while a prompt is open.
-- **Themes.** Black and white with Claude orange by default, plus Glass and Sigil as data-only theme plugins: colours, fonts and window effects, no code.
-- **MULTIMAXXING**, an attention scheduler plugin (below).
+Haunt keeps its core small and builds the rest as plugins. A plugin is a WASM component run by wasmtime against a versioned API (`wit/haunt-plugin.wit`). It gets only the capabilities it declares, such as reading agent events, labelling a row, opening a side panel, drawing the Dock tile, lighting the screen's edge, or playing a sound, and you approve each one at install. The approved set is pinned in a lockfile, an update that wants more asks again, and nothing is installed by default. A plugin can never answer an agent's prompt by itself, and its text can't spell Haunt's status words.
 
-### MULTIMAXXING
+Sixteen plugins are built on that API (listed at the end): on the agents' rows (CI checks, checklist progress, tool-call sparklines, a live ticker, sticky notes), in side panels and windows (a code map, your fleet as a night sky, a calendar heatmap, handoff briefs), and outside the window (the Dock ghost, a glow at the top of the screen, sounds and a voice). A seventeenth, Scope creep, reads the plan an agent got approved in plan mode and marks its row when it edits a file the plan never named, for example "1 outside plan · package.json".
 
-MULTIMAXXING is an attention scheduler for people running many agents in Haunt. It scores every tab by how much it deserves you now: a waiting approval grows more urgent by the second and counts the predicted work stuck behind it, while finished output loses value as it sits unread. It weighs each ping against the cost of pulling you off what you're doing, and holds what can wait until your next natural break, sending held pings together, never later than a 10-minute cap. Every decision comes with a one-line reason, and the whole engine replays on Linux without Haunt:
+![Scope creep: the suite row reads "1 outside plan · package.json", and the Scope panel lists the files the plan names next to the ones the agent touched](docs/img/scope-creep.png)
+
+Themes are plugins too, made only of data: colours, fonts, a few strings, and drawing layers (fills, gradients, bevels, patterns, PNGs, vector paths, shadows) tied to named parts of the window. Five ship: Glass, Sigilcore, Windows 95, DMG and Frutiger Aero. Haunt checks every layer before drawing it behind the text, and drops any that would make text unreadable, cover the terminal, or hide or fake an agent's status.
+
+![The Frutiger Aero theme applied from the theme picker](docs/img/theme-aero.png)
+
+## MULTIMAXXING
+
+MULTIMAXXING, the largest plugin, is an attention scheduler for people running many agents in Haunt. It scores every tab by how much it deserves you now: a waiting approval grows more urgent by the second and counts the predicted work stuck behind it, while finished output loses value as it sits unread. It weighs each ping against the cost of pulling you off what you're doing, and holds what can wait until your next natural break, sending held pings together, never later than a 10-minute cap. Every decision comes with a one-line reason. To watch it decide on a recorded session:
 
 ```sh
 # in haunt-multimaxxing
@@ -24,22 +33,36 @@ cargo run -p replay -- --decisions-only --no-rows traces/recorded-demo-repos.jso
 
 That trace is real: three headless Claude Code sessions (Sonnet) on small demo repos, scrubbed.
 
+## Safety
+
+- **The gate.** Every answer to an agent's permission prompt, from a click, a notification or a plugin, goes through one check in the core. An answer is sent as keystrokes only to the live request that is on screen. It is refused if the request is stale or replaced, if another prompt is up, if you typed at the terminal, or if the command hides characters. Each tab gets a random nonce, and events without it can update status but never create a request.
+- **Notifications with Allow and Deny.** A notification answers exactly the request it was shown for, through the same gate. Allow only appears when the whole command fits on the banner; anything longer gets Open only.
+- **The review screen (⌘⇧R).** An agent's diff, the checks it ran, and an inbox of tabs with changes. Comments go back to the agent as a prompt. Git runs with filters, diff drivers, hooks and submodule configs disabled, so a hostile repo can't run code when you look at its diff.
+
+![A paste with a hidden zero-width space: Haunt spells it out as \u{200b} before anything reaches the terminal](docs/img/paste-guard.png)
+
+![The review screen: a comment on the agent's diff, which goes back to it as a prompt](docs/img/review.png)
+
 ## How to run
 
 ### Linux, in Docker
 
-No credentials needed. The network is used only while building.
+No credentials needed, and nothing else to check out. The network is used only while building.
 
 ```sh
-docker build --build-context haunt=../haunt -t haunt-replay .   # a few minutes
-docker run --rm --network none haunt-replay                     # the tests, then every trace
+docker build -t haunt-replay .                 # fetches haunt-core and the MULTIMAXXING engine at pinned revs
+docker run --rm --network none haunt-replay    # the tests, then every trace
 ```
 
-`--build-context` points at a haunt checkout next to this repo. If `Cargo.toml` uses the commented git dependency instead, a plain `docker build -t haunt-replay .` works.
+To build against local checkouts instead (haunt and haunt-plugins next to this repo), switch `Cargo.toml` to its path dependencies and pass both:
+
+```sh
+docker build --build-context haunt=../haunt --build-context multimaxxing=../haunt-plugins/haunt-multimaxxing -t haunt-replay .
+```
 
 ### Linux or macOS, with Rust
 
-The toolchain is pinned in `rust-toolchain.toml`, and haunt must be checked out at `../haunt`.
+The toolchain is pinned in `rust-toolchain.toml`. Cargo fetches haunt-core and the engine itself; with the path dependencies, haunt must be at `../haunt` and haunt-plugins at `../haunt-plugins`.
 
 ```sh
 cargo test
@@ -86,7 +109,7 @@ The haunt README covers the agent adapters, `haunt setup` and bundling plugins.
 - [haunt](https://github.com/highskore/haunt): the app, the core, the CLI and the plugin API.
 - [haunt-multimaxxing](https://github.com/highskore/haunt-multimaxxing): the attention scheduler.
 
-Plugins (these and MULTIMAXXING's plugin target plugin API 0.5, which isn't in haunt's main branch yet):
+Plugins:
 
 - [haunt-welcome-back](https://github.com/highskore/haunt-welcome-back): what your agents did while you were away, waiting for you when you're back
 - [haunt-sticky-notes](https://github.com/highskore/haunt-sticky-notes): pin a note to any agent tab, with an optional reminder
@@ -104,6 +127,22 @@ Plugins (these and MULTIMAXXING's plugin target plugin API 0.5, which isn't in h
 - [haunt-live-ticker](https://github.com/highskore/haunt-live-ticker): a live ticker of each agent's tool calls on its row
 - [haunt-constellation](https://github.com/highskore/haunt-constellation): your agent fleet as a night sky
 - [haunt-code-map](https://github.com/highskore/haunt-code-map): a treemap of where your agents are editing a repo today
+- [haunt-scope-creep](https://github.com/highskore/haunt-scope-creep): marks an agent's row when it edits a file outside the plan you approved
+
+First-party plugins, bundled with the app:
+
+- [haunt-allowlist](https://github.com/highskore/haunt-allowlist): proposes an allow rule once you've approved the same Bash command in a project three times
+- [haunt-commands](https://github.com/highskore/haunt-commands): your own ⌘K commands that type a line into the current tab
+- [haunt-decision-log](https://github.com/highskore/haunt-decision-log): search every permission request Haunt recorded, from ⌘K
+- [haunt-tabs-plus](https://github.com/highskore/haunt-tabs-plus): tab arranging for the sidebar
+
+Themes:
+
+- [haunt-theme-glass](https://github.com/highskore/haunt-theme-glass): Glass
+- [haunt-theme-sigil](https://github.com/highskore/haunt-theme-sigil): Sigilcore
+- [haunt-theme-win95](https://github.com/highskore/haunt-theme-win95): Windows 95
+- [haunt-theme-dmg](https://github.com/highskore/haunt-theme-dmg): DMG
+- [haunt-theme-aero](https://github.com/highskore/haunt-theme-aero): Frutiger Aero
 
 ## License
 
