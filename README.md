@@ -9,7 +9,7 @@
 A native macOS terminal for running many coding agents at once, built on libghostty, with a Rust core over UniFFI and sandboxed WASM plugins.
 
 [![Watch the demo](https://img.shields.io/badge/watch-the%203%20min%20demo-D97757)](docs/video/demo.mp4)
-[![27-second cut](https://img.shields.io/badge/or-the%2027%20s%20cut-111)](docs/video/demo-short.mp4)
+[![19-second cut](https://img.shields.io/badge/or-the%2019%20s%20cut-111)](docs/video/demo-short.mp4)
 ![macOS](https://img.shields.io/badge/macOS-15%2B-111?logo=apple&logoColor=white)
 ![Rust core](https://img.shields.io/badge/core-Rust-6b7280?logo=rust&logoColor=white)
 ![WASM plugins](https://img.shields.io/badge/plugins-WASM%20components-654ff0?logo=webassembly&logoColor=white)
